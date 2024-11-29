@@ -5,7 +5,7 @@ const app = express()
 const { initializeDatabase } = require("./db/db.connection")
 const { Books } = require("./models/books.model")
 
-app.use(cors())
+app.use(cors({ origin: "*" }))
 app.use(express.json())
 
 initializeDatabase()
@@ -24,10 +24,10 @@ app.get("/books", async (req, res) => {
 })
 
 app.post("/books", async (req, res) => {
-  const { bookName, author, genre } = req.body
+  const { title, author, genre } = req.body
 
   try {
-    const bookData = new Books({ bookName, author, genre })
+    const bookData = new Books({ title, author, genre })
     await bookData.save()
     res.status(201).json(bookData)
   } catch (error) {
@@ -39,7 +39,7 @@ app.delete("/books/:id", async (req, res) => {
   const bookId = req.params.id
 
   try {
-    const deletedBook = await Books.findByIdAndDelete({})
+    const deletedBook = await Books.findByIdAndDelete(bookId)
 
     if (!deletedBook) {
       return res.status(404).json({ error: "Book not found" })
