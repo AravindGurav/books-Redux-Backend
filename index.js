@@ -39,7 +39,7 @@ app.delete("/books/:id", async (req, res) => {
   const bookId = req.params.id
 
   try {
-    const deletedBook = await Books.findByIdAndRemove(bookId)
+    const deletedBook = await Books.findByIdAndDelete({})
 
     if (!deletedBook) {
       return res.status(404).json({ error: "Book not found" })
@@ -52,6 +52,26 @@ app.delete("/books/:id", async (req, res) => {
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: "Internal server error" })
+  }
+})
+
+app.post("/books/:id", async (req, res) => {
+  const bookId = req.params.id
+
+  try {
+    const updatedBook = await Books.findByIdAndUpdate(bookId, req.body, {
+      new: true,
+    })
+    if (updatedBook) {
+      res.status(200).json({
+        message: "Book updated successfully",
+        updatedBook: updatedBook,
+      })
+    } else {
+      res.status(404).json({ error: "Book not found" })
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to updated book" })
   }
 })
 
